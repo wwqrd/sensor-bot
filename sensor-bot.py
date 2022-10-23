@@ -9,10 +9,10 @@ ADAFRUIT_IO_KEY = os.environ["ADAFRUIT_IO_KEY"]
 ADAFRUIT_IO_USERNAME = os.environ["ADAFRUIT_IO_USERNAME"]
 
 def connected(client):
-    print('Connected to Adafruit IO')
+    print('Connected.')
 
 def disconnected(client):
-    print('Disconnected from Adafruit IO')
+    print('Disconnected.')
     sys.exit(1)
 
 try:
@@ -36,7 +36,7 @@ client.loop_background()
 
 while True:
     if sensor.get_sensor_data():
-        temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humdity
+        temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humidity
 
         client.publish('temperature', temperature)
         client.publish('pressure', pressure)
@@ -46,6 +46,6 @@ while True:
             temperature,
             pressure,
             humidity)
-        print(output)
+        print(output, flush=True)
 
-    time.sleep(10)
+    time.sleep(15)

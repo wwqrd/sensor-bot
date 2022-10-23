@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 import time
+import os
 import bme680
 from Adafruit_IO import MQTTClient
 
-ADAFRUIT_IO_KEY = 'YOUR KEY'
-ADAFRUIT_IO_USERNAME = 'USERNAME'
+ADAFRUIT_IO_KEY = os.environ["ADAFRUIT_IO_KEY"]
+ADAFRUIT_IO_USERNAME = os.environ["ADAFRUIT_IO_USERNAME"]
 
 def connected(client):
     print('Connected to Adafruit IO')
@@ -33,16 +34,18 @@ client.connect()
 
 client.loop_background()
 
-try:
-    while True:
-        if sensor.get_sensor_data():
-            output = 'Sensor reading: {0:.2f} C,{1:.2f} hPa,{2:.3f} %RH'.format(
-                sensor_data.temperature,
-                sensor_data.pressure,
-                sensor_data.humidity)
-            print(output)
-            client.publish('temperature', sensor_data.temperature)
-            client.publish('pressure', sensor_data.pressure)
-            client.publish('humidity', sensor_data.humidity)
+while True:
+    if sensor.get_sensor_data():
+        temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humdity
 
-        time.sleep(10)
+        client.publish('temperature', temperature)
+        client.publish('pressure', pressure)
+        client.publish('humidity', humidity)
+
+        output = 'Sensor reading: {0:.2f} C,{1:.2f} hPa,{2:.3f} %RH'.format(
+            temperature,
+            pressure,
+            humidity)
+        print(output)
+
+    time.sleep(10)

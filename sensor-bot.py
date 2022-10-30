@@ -35,17 +35,25 @@ client.connect()
 client.loop_background()
 
 while True:
-    if sensor.get_sensor_data():
-        temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humidity
+    print(datetime.datetime.now(), flush=True, end=": ")
+    try:
+        if sensor.get_sensor_data():
+            temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humidity
 
-        client.publish('temperature', temperature)
-        client.publish('pressure', pressure)
-        client.publish('humidity', humidity)
+            client.publish('temperature', temperature)
+            client.publish('pressure', pressure)
+            client.publish('humidity', humidity)
 
-        output = 'Sensor reading: {0:.2f} C,{1:.2f} hPa,{2:.3f} %RH'.format(
-            temperature,
-            pressure,
-            humidity)
-        print(output, flush=True)
+            output = '{0:.2f} C,{1:.2f} hPa,{2:.3f} %RH'.format(
+                temperature,
+                pressure,
+                humidity)
+            print(output, flush=True)
+            time.sleep(30)
+        else:
+            print("No data.", flush=True)
+            time.sleep(0.1)
+    except Exception as e:
+        print("Exception - ", str(e), flush=True)
+        time.sleep(1)
 
-    time.sleep(15)

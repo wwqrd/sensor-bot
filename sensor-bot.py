@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 
 import time
+import datetime
 import os
+import sys
 import bme680
 from Adafruit_IO import MQTTClient
 
 ADAFRUIT_IO_KEY = os.environ["ADAFRUIT_IO_KEY"]
 ADAFRUIT_IO_USERNAME = os.environ["ADAFRUIT_IO_USERNAME"]
 
+print("v3", flush=True)
+
 def connected(client):
-    print('Connected.')
+    print('Connected.', flush=True)
 
 def disconnected(client):
-    print('Disconnected.')
+    print('Disconnected.', flush=True)
     sys.exit(1)
 
 try:
@@ -32,28 +36,18 @@ client.on_disconnect = disconnected
 
 client.connect()
 
-client.loop_background()
-
 while True:
     print(datetime.datetime.now(), flush=True, end=": ")
-    try:
-        if sensor.get_sensor_data():
-            temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humidity
+    if sensor.get_sensor_data():
+        temperature, pressure, humidity = sensor.data.temperature, sensor.data.pressure, sensor.data.humidity
 
-            client.publish('temperature', temperature)
-            client.publish('pressure', pressure)
-            client.publish('humidity', humidity)
+        client.publish('temperature', temperature)
+        client.publish('pressure', pressure)
+        client.publish('humidity', humidity)
 
-            output = '{0:.2f} C,{1:.2f} hPa,{2:.3f} %RH'.format(
-                temperature,
-                pressure,
-                humidity)
-            print(output, flush=True)
-            time.sleep(30)
-        else:
-            print("No data.", flush=True)
-            time.sleep(0.1)
-    except Exception as e:
-        print("Exception - ", str(e), flush=True)
-        time.sleep(1)
-
+        output = '{0:.2f} C,{1:.2f} hPa,{2:.3f} %RH'.format(
+            temperature,
+            pressure,
+            humidity)
+        print(output, flush=True)
+    time.sleep(30)
